@@ -13,34 +13,31 @@ pygame.display.set_caption('Flappy Bird AI')
 screen_height = 600
 screen_width = 270
 
-max_score = 0
-
-results = []
 best = None
 best_fit = -1e400
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+results = []
+bg = pygame.image.load("./FlappyBirdAIProject/FlappyBird/background-day.png")
 
-bg = pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/background-day.png")
+base = pygame.image.load("./FlappyBirdAIProject/FlappyBird/base.png")
 
-base = pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/base.png")
+pipe = pygame.image.load("./FlappyBirdAIProject/FlappyBird/pipe-green.png")
 
-pipe = pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/pipe-green.png")
+birds = [pygame.image.load("./FlappyBirdAIProject/FlappyBird/yellowbird-downflap.png"),
+         pygame.image.load("./FlappyBirdAIProject/FlappyBird/yellowbird-midflap.png"),
+         pygame.image.load("./FlappyBirdAIProject/FlappyBird/yellowbird-upflap.png")]
 
-birds = [pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/yellowbird-downflap.png"),
-         pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/yellowbird-midflap.png"),
-         pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/yellowbird-upflap.png")]
-
-numbers = [pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/0.png"),
-           pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/1.png"),
-           pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/2.png"),
-           pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/3.png"),
-           pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/4.png"),
-           pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/5.png"),
-           pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/6.png"),
-           pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/7.png"),
-           pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/8.png"),
-           pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/9.png")]
+numbers = [pygame.image.load("./FlappyBirdAIProject/FlappyBird/0.png"),
+           pygame.image.load("./FlappyBirdAIProject/FlappyBird/1.png"),
+           pygame.image.load("./FlappyBirdAIProject/FlappyBird/2.png"),
+           pygame.image.load("./FlappyBirdAIProject/FlappyBird/3.png"),
+           pygame.image.load("./FlappyBirdAIProject/FlappyBird/4.png"),
+           pygame.image.load("./FlappyBirdAIProject/FlappyBird/5.png"),
+           pygame.image.load("./FlappyBirdAIProject/FlappyBird/6.png"),
+           pygame.image.load("./FlappyBirdAIProject/FlappyBird/7.png"),
+           pygame.image.load("./FlappyBirdAIProject/FlappyBird/8.png"),
+           pygame.image.load("./FlappyBirdAIProject/FlappyBird/9.png")]
 
 bg_height = bg.get_height()
 base_height = base.get_height()
@@ -140,9 +137,10 @@ class Obstacle: # Obstacle class.
         self.image = image
         
         self.gap = 177
+        self.dx = 1
         
         self.maximum = self.image.get_height()
-        self.minimum = self.maximum*0.2
+        self.minimum = self.maximum * 0.2
         self.passed = False
         
         self.top_height = random.random()*(self.maximum-self.minimum)+self.minimum
@@ -151,18 +149,15 @@ class Obstacle: # Obstacle class.
         self.rect2 = pygame.Rect(self.x, self.image.get_height()+self.rect1.topright[1]+self.gap, self.image.get_width(), self.image.get_height())
         
     def update(self):
-        global points, max_score, obstacles, obstacle_velocity
+        global points, obstacles
         self.x -= self.dx
         
         if living_birds[0].x > self.rect1.bottomright[0] and not self.passed:
             points += 1
-
-            if points > max_score:
-                max_score = points
-                
+         
             self.passed = True
             self.draw()
-        elif self.x < -1*self.image.get_width():
+        elif self.x < -self.image.get_width():
             obstacles = obstacles[1:]
         else:
             self.draw()
@@ -184,10 +179,9 @@ def remove(i): # Removes a bird, genome, and neural net at a particular index.
     nets.pop(i)
     
 def eval_genomes(genomes, config): # main function.
-    global bg_height, obstacles, ge, nets, living_birds, max_score, points, best, best_fit
+    global bg_height, obstacles, ge, nets, living_birds, max_score, points, best, best_fit, results
     
-    clock = pygame.time.Clock()
-    
+
     # Initialize variables.
     points = 0
     living_birds = []
@@ -203,14 +197,10 @@ def eval_genomes(genomes, config): # main function.
     
     if (screen_width-obstacles[-1].x-2*obstacles[0].image.get_width()-obstacle_gap) > 0:
         obstacles.append(Obstacle(280+obstacles[0].image.get_width()+obstacle_gap))
+
     index_counter = 0
 
     bird_moves = {}
-    winner_index = None
-    
-    
-    current_best_fitness = -1e400
-
     
     # Declares the neural nets for a run.
     for genome_id, genome in genomes:
@@ -223,7 +213,7 @@ def eval_genomes(genomes, config): # main function.
         genome.fitness = 0
         
         index_counter += 1
-    bird_moves = {i : 0 for i in range(len(living_birds))}
+
     while True: 
         screen.fill([255,255,255])
         for event in pygame.event.get():
@@ -231,9 +221,6 @@ def eval_genomes(genomes, config): # main function.
                 pygame.quit()
                 sys.exit()
         screen.blit(bg, (0, 0))
-        
-
-                
         for i, obstacle in enumerate(obstacles):
             obstacle.update()
         
@@ -241,7 +228,6 @@ def eval_genomes(genomes, config): # main function.
         
         count += 1
         
-
         for i, bird in enumerate(living_birds):
             if count % 9 == 0: # Only feed the bird's stats to the neural net every ninth iteration. It makes the movements look more human.
                 output = nets[i].activate((bird.y, bird.dy, bird.angle, obstacles[0].rect1.bottomright[1], obstacles[0].rect2.topright[1], abs(obstacles[0].rect1.bottomleft[0]-bird.x), obstacle_velocity))
@@ -254,8 +240,6 @@ def eval_genomes(genomes, config): # main function.
             
                 ge[i].fitness = (points ** 2) * (math.e ** (-0.001 * bird_moves[bird.index]))
                 
-                if ge[i].fitness > current_best_fitness:
-                    current_best_fitness = ge[i].fitness
                 if ge[i].fitness > best_fit: # If the genome is more 'fit' for the environment, it becomes the best genome.
                     best_fit = ge[i].fitness
                     best = nets[i]
@@ -264,13 +248,12 @@ def eval_genomes(genomes, config): # main function.
         if len(living_birds) == 0 or points > 175: # If there are no more birds, terminate the game. Also, this sets a max score so the game doesn't go on too long.
             print('\n')
             print(f'{pop.generation} : {points}')
-            print('Winner Moves : {}'.format(max(bird_moves.values())))
             print('\n')
             
-            results.append([current_best_fitness, points, max(bird_moves.values())])
+            results.append([points])
             break
         if len(obstacles) == 0 or (screen_width-obstacles[-1].x-obstacles[-1].image.get_width()-obstacle_gap > 0): # Adds a new obstacle.
-            obstacles.append(Obstacle(screen_width, obstacle_velocity))
+            obstacles.append(Obstacle(screen_width))
         
         display_score(points)
 
@@ -287,14 +270,14 @@ def run(config_path):
     )
     
     pop = neat.Population(config)
-    pop.run(eval_genomes, 150) # Run eval_genomes for 500 generations.
+    pop.run(eval_genomes, 150) # Run eval_genomes for 150 generations.
 
 if __name__ == '__main__':
-    config_path = os.path.join('/Users/blakemartin/Downloads/OptimizedFlappyAI/config.txt')
+    config_path = os.path.join('./FlappyBirdAIProject/config.txt')
     run(config_path)
     
-    pickle.dump(best, open('/Users/blakemartin/Desktop/optimized_bird.pkl', 'wb'))
+    pickle.dump(best, open('./experimental_group_bird.pkl', 'wb'))
     
     df = pd.DataFrame(results)
     
-    df.to_csv('/Users/blakemartin/Desktop/optimized_bird_data.csv')
+    df.to_csv('./experimental_group_data.csv')
