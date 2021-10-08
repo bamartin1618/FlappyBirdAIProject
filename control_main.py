@@ -19,7 +19,7 @@ best_fit = -1e400
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 results = []
-# Import images. If you want to run the AI on your machine, you'll need to change the file paths.
+
 bg = pygame.image.load("./FlappyBirdAIProject/FlappyBird/background-day.png")
 
 base = pygame.image.load("./FlappyBirdAIProject/FlappyBird/base.png")
@@ -142,7 +142,7 @@ class Obstacle: # Obstacle class.
         self.dx = 1
         
         self.maximum = self.image.get_height()
-        self.minimum = self.maximum*0.2
+        self.minimum = self.maximum * 0.2
         self.passed = False
         
         self.top_height = random.random()*(self.maximum-self.minimum)+self.minimum
@@ -159,7 +159,7 @@ class Obstacle: # Obstacle class.
                 
             self.passed = True
             self.draw()
-        elif self.x < -1*self.image.get_width():
+        elif self.x < -self.image.get_width():
             obstacles = obstacles[1:]
         else:
             self.draw()
@@ -230,13 +230,10 @@ def eval_genomes(genomes, config): # main function.
                 output = nets[i].activate((bird.y, bird.dy, bird.angle, obstacles[0].rect1.bottomright[1], obstacles[0].rect2.topright[1], abs(obstacles[0].rect1.bottomleft[0]-bird.x)))
                 if output[0] > 0.7: # If the probability that the bird should jump is > 0.7, the bird jumps.
                     bird.jumping = True
-                    
-                    bird_moves[bird.index] += 1
+
             ge[i].fitness += 1 # Add to the fitness.
             
             if bird.update() == -1: # If collision is detected, remove the bird.
-                if ge[i].fitness > current_best_fitness:
-                    current_best_fitness = ge[i].fitness
                 if ge[i].fitness > best_fit: # If the genome is more 'fit' for the environment, it becomes the best genome.
                     best_fit = ge[i].fitness
                     best = nets[i]
