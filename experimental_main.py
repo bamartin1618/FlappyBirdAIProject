@@ -21,7 +21,6 @@ best_fit = -1e400
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 
-# Import images. If you want to run the AI on your machine, you'll need to change the file paths.
 bg = pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/background-day.png")
 
 base = pygame.image.load("/Users/blakemartin/Downloads/OptimizedFlappyAI/FlappyBird/base.png")
@@ -136,12 +135,11 @@ class Bird:
     
 class Obstacle: # Obstacle class.
     global bg_height
-    def __init__(self, x, dx, image = pipe): # Declare attributes for obstacle instance.
+    def __init__(self, x, image = pipe): # Declare attributes for obstacle instance.
         self.x = x
         self.image = image
         
         self.gap = 177
-        self.dx = dx
         
         self.maximum = self.image.get_height()
         self.minimum = self.maximum*0.2
@@ -158,12 +156,6 @@ class Obstacle: # Obstacle class.
         
         if living_birds[0].x > self.rect1.bottomright[0] and not self.passed:
             points += 1
-            
-            if (points // 10 >= 1) and (points % 10 == 0):
-                obstacle_velocity += 0.2
-                
-                for obstacle in obstacles:
-                    obstacle.dx = obstacle_velocity
 
             if points > max_score:
                 max_score = points
@@ -192,7 +184,7 @@ def remove(i): # Removes a bird, genome, and neural net at a particular index.
     nets.pop(i)
     
 def eval_genomes(genomes, config): # main function.
-    global bg_height, obstacles, ge, nets, living_birds, max_score, points, best, best_fit, obstacle_velocity
+    global bg_height, obstacles, ge, nets, living_birds, max_score, points, best, best_fit
     
     clock = pygame.time.Clock()
     
@@ -206,9 +198,8 @@ def eval_genomes(genomes, config): # main function.
     
     ge = []
     nets = []
-    
-    obstacle_velocity = 1
-    obstacles = [Obstacle(280, obstacle_velocity)]
+   
+    obstacles = [Obstacle(280)]
     
     if (screen_width-obstacles[-1].x-2*obstacles[0].image.get_width()-obstacle_gap) > 0:
         obstacles.append(Obstacle(280+obstacles[0].image.get_width()+obstacle_gap))
@@ -296,7 +287,7 @@ def run(config_path):
     )
     
     pop = neat.Population(config)
-    pop.run(eval_genomes, 250) # Run eval_genomes for 500 generations.
+    pop.run(eval_genomes, 150) # Run eval_genomes for 500 generations.
 
 if __name__ == '__main__':
     config_path = os.path.join('/Users/blakemartin/Downloads/OptimizedFlappyAI/config.txt')
