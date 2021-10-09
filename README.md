@@ -1,5 +1,5 @@
 # FlappyBirdAIProject
-The code repository for the Flappy Bird AI Project, containing both versions of the game: the control and experimental groups.
+The code repository for Flappy Bird AI, containing the control and experimental groups.
 
 In this project, we wanted to compare the training phases of two ANN models that were trained to play Flappy Bird using the NEAT algorithm. The <a href = "https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies">NEAT</a> algorithm is an approach in deep reinforcement learning founded by Kenneth Stanley. The approach uses evolutionary algorithms to improve an agent over time, inspired by Darwinian concepts such as natural selection.
 
