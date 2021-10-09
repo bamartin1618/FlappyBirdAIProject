@@ -1,7 +1,7 @@
 # FlappyBirdAIProject
 The code repository for Flappy Bird AI, containing the control and experimental groups.
 
-In this project, we wanted to compare the training phases of two ANN models that were trained to play Flappy Bird using the NEAT algorithm. The <a href = "https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies">NEAT</a> algorithm is an approach in deep reinforcement learning founded by Kenneth Stanley. The approach uses evolutionary algorithms to improve an agent over time, inspired by Darwinian concepts such as natural selection.
+In this project, we wanted to compare the training phases of two ANN models that were trained to play Flappy Bird using the NEAT algorithm. The <a href = "https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies">NEAT</a> algorithm is an approach in deep reinforcement learning founded by Kenneth Stanley. The approach uses genetic algorithms to improve an agent over time, inspired by Darwin's principles of natural selection.
 
 In NEAT, the performance of a neural network is evaluated by a fitness function. The fitness function is a predetermined mathematical equation that estimates the performance of the network based on factors we are trying to optimize, such as points scored. In this project, we trained a model using a simple, linear fitness function, which was our control group. For this group, we simply evaluated the neural networks by their lifespan in milliseconds. 
 
